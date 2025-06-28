@@ -176,30 +176,24 @@
     } else {
       var htmlContent = '';
       
-      // Define el orden de las columnas que quieres mostrar
-      // **AJUSTA esta lista para que coincida con los nombres de tus columnas en Google Sheets**
-      var orderedKeys = [
-        'Nombre Completo', 
-        'Matemáticas', 
-        'Ciencias', 
-        'Historia', 
-        'Promedio Final'
-      ];
+      // Obtiene el nombre del estudiante de los datos
+      var studentName = data.studentData['Nombre Completo'] || 'el estudiante';
+      
+      // Muestra el nombre del estudiante en el título
+      htmlContent += '<h3>Notas para ' + studentName + ':</h3>';
 
-      htmlContent += '<h3>Notas para ' + (data['Nombre Completo'] || 'el estudiante') + ':</h3>';
-
-      htmlContent += '<div style="max-height: 400px; overflow-y: auto;">'; // Contenedor con scroll para muchas notas
-      for (var i = 0; i < orderedKeys.length; i++) {
-        var key = orderedKeys[i];
-        if (data.hasOwnProperty(key)) {
-          // Ignora el ID, ya lo conocemos
-          if (key.trim().toLowerCase() !== 'id estudiante') {
-             htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> <span class="note-value">' + data[key] + '</span></div>';
-          }
+      // Agrega un contenedor con scroll si hay muchas notas
+      htmlContent += '<div style="max-height: 400px; overflow-y: auto;">';
+      
+      // Itera sobre la lista de encabezados que la API nos envió
+      data.displayHeaders.forEach(function(key) {
+        // Ignora las columnas de ID y Nombre en el listado de notas
+        if (key.trim().toLowerCase() !== 'id estudiante' && key.trim().toLowerCase() !== 'nombre completo') {
+          htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> <span class="note-value">' + data.studentData[key] + '</span></div>';
         }
-      }
-      htmlContent += '</div>';
-
+      });
+      
+      htmlContent += '</div>'; // Cierra el contenedor de scroll
       resultDiv.innerHTML = htmlContent;
     }
   }
