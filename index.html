@@ -1,50 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>Consulta de Notas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    h2 {
+      color: #1a1a1a;
+      margin-bottom: 25px;
+      font-size: 2em;
+      font-weight: 600;
+    }
+    .input-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 500;
+      color: #4a4a4a;
+      font-size: 1em;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 1.1em;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: bold;
+      width: 100%;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:active {
+      transform: scale(0.99);
+    }
+    #result {
+      margin-top: 30px;
+      text-align: left;
+      font-size: 1em;
+      line-height: 1.6;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 25px;
+    }
+    .note-item {
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .note-item:last-child {
+      border-bottom: none;
+    }
+    .note-label {
+      font-weight: 600;
+      color: #333;
+    }
+    .note-value {
+      font-weight: 400;
+      color: #555;
+    }
+    .error {
+      color: #dc3545;
+      font-weight: bold;
+      text-align: center;
+      padding: 15px;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+    }
+    .loading {
+      color: #6c757d;
+      font-style: italic;
+      text-align: center;
+      padding: 15px;
+    }
+    h3 {
+      text-align: center;
+      color: #007bff;
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 1.5em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Consulta tus notas</h2>
+  <div class="input-group">
+    <label for="studentID">Ingresa tu identificación:</label>
+    <input type="text" id="studentID" placeholder="Ej: 12345">
+  </div>
+  <button onclick="getNotes()">Consultar</button>
+  <div id="result"></div>
+</div>
+
 <script>
-  // **IMPORTANTE: Pega aquí la URL de la aplicación web que obtuviste en el Paso 2.**
+  // ** IMPORTANTE: Pega aquí la URL de la aplicación web de tu API **
   const API_URL = 'https://script.google.com/macros/s/AKfycbzwTXXNHfuF7nzCRmVG1kF8sJKR9PUw2mQQzTrkieLkJgrRSjYvmnmVgTbX_zyR1-HRJA/exec';
 
   function getNotes() {
     var studentID = document.getElementById('studentID').value;
     var resultDiv = document.getElementById('result');
+    
+    if (!studentID) {
+        resultDiv.innerHTML = '<div class="error">Por favor, ingresa una identificación.</div>';
+        return;
+    }
+
     resultDiv.innerHTML = '<div class="loading">Buscando notas...</div>';
     
     // Llama a la API con el ID del estudiante como parámetro de URL
-    fetch(`${API_URL}?studentID=${studentID}`)
-      .then(response => response.json()) // Convierte la respuesta a formato JSON
-      .then(data => showNotes(data))    // Llama a showNotes con los datos
-      .catch(error => {
-        console.error('Error:', error);
-        resultDiv.innerHTML = '<div class="error">Hubo un error al conectar con el servidor.</div>';
-      });
-  }
-  
-  function showNotes(data) {
-    var resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = '';
-    
-    if (data.error) {
-      resultDiv.innerHTML = '<div class="error">' + data.error + '</div>';
-    } else {
-      var htmlContent = '';
-      
-      // Define el orden de las columnas que quieres mostrar (mismo que el anterior)
-      var orderedKeys = [
-        'Nombre Completo', 
-        'Matemáticas', 
-        'Ciencias', 
-        'Historia', 
-        'Promedio Final'
-      ];
-
-      htmlContent += '<h3>Notas para ' + data['Nombre Completo'] + ':</h3>';
-
-      for (var i = 0; i < orderedKeys.length; i++) {
-        var key = orderedKeys[i];
-        if (data.hasOwnProperty(key) && key.trim().toLowerCase() !== 'id estudiante') {
-          htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> ' + data[key] + '</div>';
-        }
-      }
-
-      resultDiv.innerHTML = htmlContent;
-    }
-  }
-</script>
+    fetch(`${API
