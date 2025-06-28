@@ -1,132 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <base target="_top">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 500px;
-      text-align: center;
-    }
-    h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-    .input-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #555;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007BFF;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      width: 100%;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #result {
-      margin-top: 20px;
-      text-align: left;
-      font-size: 1.1em;
-      line-height: 1.6;
-    }
-    .note-item {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .note-item:last-child {
-      border-bottom: none;
-    }
-    .note-label {
-      font-weight: bold;
-      color: #007BFF;
-    }
-    .error {
-      color: #dc3545;
-      font-weight: bold;
-    }
-    .loading {
-      color: #6c757d;
-      font-style: italic;
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-  <h2>Consulta tus notas</h2>
-  <div class="input-group">
-    <label for="studentID">Ingresa tu identificación:</label>
-    <input type="text" id="studentID" placeholder="Ej: 8-123-456">
-  </div>
-  <button onclick="getNotes()">Consultar</button>
-  <div id="result"></div>
-</div>
-
 <script>
+  // **IMPORTANTE: Pega aquí la URL de la aplicación web que obtuviste en el Paso 2.**
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzwTXXNHfuF7nzCRmVG1kF8sJKR9PUw2mQQzTrkieLkJgrRSjYvmnmVgTbX_zyR1-HRJA/exec';
+
   function getNotes() {
     var studentID = document.getElementById('studentID').value;
     var resultDiv = document.getElementById('result');
     resultDiv.innerHTML = '<div class="loading">Buscando notas...</div>';
     
-    // Llamar a la función de Apps Script
-    google.script.run.withSuccessHandler(showNotes).getStudentData(studentID);
+    // Llama a la API con el ID del estudiante como parámetro de URL
+    fetch(`${API_URL}?studentID=${studentID}`)
+      .then(response => response.json()) // Convierte la respuesta a formato JSON
+      .then(data => showNotes(data))    // Llama a showNotes con los datos
+      .catch(error => {
+        console.error('Error:', error);
+        resultDiv.innerHTML = '<div class="error">Hubo un error al conectar con el servidor.</div>';
+      });
   }
   
   function showNotes(data) {
     var resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = ''; // Limpiar resultados anteriores
+    resultDiv.innerHTML = '';
     
     if (data.error) {
       resultDiv.innerHTML = '<div class="error">' + data.error + '</div>';
     } else {
       var htmlContent = '';
-      for (var key in data) {
-        if (data.hasOwnProperty(key)) {
-          // Ignorar la columna de ID para no mostrarla nuevamente
-          if (key.trim().toLowerCase() !== 'id estudiante' && key.trim().toLowerCase() !== 'nombre completo') {
-             htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> ' + data[key] + '</div>';
-          }
+      
+      // Define el orden de las columnas que quieres mostrar (mismo que el anterior)
+      var orderedKeys = [
+        'Nombre Completo', 
+        'Matemáticas', 
+        'Ciencias', 
+        'Historia', 
+        'Promedio Final'
+      ];
+
+      htmlContent += '<h3>Notas para ' + data['Nombre Completo'] + ':</h3>';
+
+      for (var i = 0; i < orderedKeys.length; i++) {
+        var key = orderedKeys[i];
+        if (data.hasOwnProperty(key) && key.trim().toLowerCase() !== 'id estudiante') {
+          htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> ' + data[key] + '</div>';
         }
       }
-      resultDiv.innerHTML = '<h3>Notas para ' + data['Nombre Completo'] + ':</h3>' + htmlContent;
+
+      resultDiv.innerHTML = htmlContent;
     }
   }
 </script>
-
-</body>
-</html>
