@@ -153,4 +153,57 @@
     resultDiv.innerHTML = '<div class="loading">Buscando notas...</div>';
     
     // Llama a la API con el ID del estudiante como parámetro de URL
-    fetch(`${API
+    fetch(`${API_URL}?studentID=${studentID}`)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => showNotes(data))
+      .catch(error => {
+        console.error('Error:', error);
+        resultDiv.innerHTML = '<div class="error">Hubo un error al conectar con el servidor. Por favor, inténtalo de nuevo más tarde.</div>';
+      });
+  }
+  
+  function showNotes(data) {
+    var resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+    
+    if (data.error) {
+      resultDiv.innerHTML = '<div class="error">' + data.error + '</div>';
+    } else {
+      var htmlContent = '';
+      
+      // Define el orden de las columnas que quieres mostrar
+      // **AJUSTA esta lista para que coincida con los nombres de tus columnas en Google Sheets**
+      var orderedKeys = [
+        'Nombre Completo', 
+        'Matemáticas', 
+        'Ciencias', 
+        'Historia', 
+        'Promedio Final'
+      ];
+
+      htmlContent += '<h3>Notas para ' + (data['Nombre Completo'] || 'el estudiante') + ':</h3>';
+
+      htmlContent += '<div style="max-height: 400px; overflow-y: auto;">'; // Contenedor con scroll para muchas notas
+      for (var i = 0; i < orderedKeys.length; i++) {
+        var key = orderedKeys[i];
+        if (data.hasOwnProperty(key)) {
+          // Ignora el ID, ya lo conocemos
+          if (key.trim().toLowerCase() !== 'id estudiante') {
+             htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> <span class="note-value">' + data[key] + '</span></div>';
+          }
+        }
+      }
+      htmlContent += '</div>';
+
+      resultDiv.innerHTML = htmlContent;
+    }
+  }
+</script>
+
+</body>
+</html>
