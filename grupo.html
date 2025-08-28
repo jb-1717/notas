@@ -158,8 +158,8 @@
     var sheetName = document.getElementById('sheetName').value; 
     var resultDiv = document.getElementById('result');
     
-    if (!studentID) {
-        resultDiv.innerHTML = '<div class="error">Por favor, ingresa una identificación.</div>';
+    if (!studentID || !sheetName) { // Validacion extra
+        resultDiv.innerHTML = '<div class="error">Por favor, ingresa una identificación y selecciona un grupo.</div>';
         return;
     }
 
