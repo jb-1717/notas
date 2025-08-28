@@ -43,7 +43,7 @@
       color: #4a4a4a;
       font-size: 1em;
     }
-    input[type="text"] {
+    input[type="text"], select {
       width: 100%;
       padding: 15px;
       border: 1px solid #e0e0e0;
@@ -52,7 +52,7 @@
       font-size: 1.1em;
       transition: border-color 0.3s ease;
     }
-    input[type="text"]:focus {
+    input[type="text"]:focus, select:focus {
       outline: none;
       border-color: #007bff;
       box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
@@ -133,6 +133,16 @@
     <label for="studentID">Ingresa tu identificación:</label>
     <input type="text" id="studentID" placeholder="Ej: 8-123-456">
   </div>
+  <div class="input-group">
+    <label for="sheetName">Selecciona tu grupo:</label>
+    <select id="sheetName">
+      <option value="10F">10-F</option>
+      <option value="12E">12-E</option>
+      <option value="12F">12-F</option>
+      <option value="12G">12-G</option>
+      <option value="12H">12-H</option>
+      </select>
+  </div>
   <button onclick="getNotes()">Consultar</button>
   <div id="result"></div>
 </div>
@@ -143,6 +153,8 @@
 
   function getNotes() {
     var studentID = document.getElementById('studentID').value;
+    // Obtiene el valor seleccionado del combobox
+    var sheetName = document.getElementById('sheetName').value; 
     var resultDiv = document.getElementById('result');
     
     if (!studentID) {
@@ -152,8 +164,8 @@
 
     resultDiv.innerHTML = '<div class="loading">Buscando notas...</div>';
     
-    // Llama a la API con el ID del estudiante como parámetro de URL
-    fetch(`${API_URL}?studentID=${studentID}&sheetName=10F`)
+    // Llama a la API con el ID del estudiante y el nombre de la hoja como parámetros
+    fetch(`${API_URL}?studentID=${studentID}&sheetName=${sheetName}`)
       .then(response => {
           if (!response.ok) {
               throw new Error('Network response was not ok');
@@ -176,24 +188,19 @@
     } else {
       var htmlContent = '';
       
-      // Obtiene el nombre del estudiante de los datos
       var studentName = data.studentData['Nombre Completo'] || 'el estudiante';
       
-      // Muestra el nombre del estudiante en el título
       htmlContent += '<h3>' + studentName + '</h3>';
 
-      // Agrega un contenedor con scroll si hay muchas notas
       htmlContent += '<div style="max-height: 400px; overflow-y: auto;">';
       
-      // Itera sobre la lista de encabezados que la API nos envió
       data.displayHeaders.forEach(function(key) {
-        // Ignora las columnas de ID y Nombre en el listado de notas
         if (key.trim().toLowerCase() !== 'id estudiante' && key.trim().toLowerCase() !== 'nombre completo') {
           htmlContent += '<div class="note-item"><span class="note-label">' + key + ':</span> <span class="note-value">' + data.studentData[key] + '</span></div>';
         }
       });
       
-      htmlContent += '</div>'; // Cierra el contenedor de scroll
+      htmlContent += '</div>';
       resultDiv.innerHTML = htmlContent;
     }
   }
