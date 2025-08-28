@@ -139,7 +139,7 @@
 
 <script>
   // ** IMPORTANTE: Pega aquí la URL de la aplicación web de tu API **
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzWo8xtCXo2fTE55s9Qx1PShiMKglEkjjBMXTy65VK7kNfC7OLj-ET9_hSgqqUVMBgc0A/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbx2ifnSMrNSn4woETjxgrAV90WZdpfSUrGdK_VPSz676IJTPMdxcVlRyDRlrItRfnnr/exec';
 
   function getNotes() {
     var studentID = document.getElementById('studentID').value;
@@ -153,7 +153,7 @@
     resultDiv.innerHTML = '<div class="loading">Buscando notas...</div>';
     
     // Llama a la API con el ID del estudiante como parámetro de URL
-    fetch(`${API_URL}?studentID=${studentID}`)
+    fetch(`${API_URL}?studentID=${studentID}&sheetName=10F`)
       .then(response => {
           if (!response.ok) {
               throw new Error('Network response was not ok');
