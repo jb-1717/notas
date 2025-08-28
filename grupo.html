@@ -130,18 +130,19 @@
 <div class="container">
   <h2>Consulta tus notas</h2>
   <div class="input-group">
-    <label for="studentID">Ingresa tu identificación:</label>
-    <input type="text" id="studentID" placeholder="Ej: 8-123-456">
-  </div>
-  <div class="input-group">
     <label for="sheetName">Selecciona tu grupo:</label>
     <select id="sheetName">
+      <option value="---">---/option>
       <option value="10F">10-F</option>
       <option value="12E">12-E</option>
       <option value="12F">12-F</option>
       <option value="12G">12-G</option>
       <option value="12H">12-H</option>
       </select>
+  </div>
+  <div class="input-group">
+    <label for="studentID">Ingresa tu identificación:</label>
+    <input type="text" id="studentID" placeholder="Ej: 8-123-456">
   </div>
   <button onclick="getNotes()">Consultar</button>
   <div id="result"></div>
