@@ -196,7 +196,7 @@
       
       htmlContent += '<h3>' + studentName + '</h3>';
 
-      htmlContent += '<div style="max-height: 400px; overflow-y: auto;">';
+      //htmlContent += '<div style="max-height: 400px; overflow-y: auto;">';
       
       data.displayHeaders.forEach(function(key) {
         if (key.trim().toLowerCase() !== 'id estudiante' && key.trim().toLowerCase() !== 'nombre completo') {
@@ -204,7 +204,7 @@
         }
       });
       
-      htmlContent += '</div>';
+      //htmlContent += '</div>';
       resultDiv.innerHTML = htmlContent;
     }
   }
